@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Ride</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            transition: background 0.3s ease;
+        }
+
+
+        .back-btn {
+            background-color: #01d5ff;
+            color: rgb(41, 41, 41);
+            border: none;
+            padding: 7px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 15px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .back-btn:hover {
+            background-color: white;
+        }
+        body.dark-mode .back-btn {
+            background-color: #2b2b2b;
+        }
+        body.dark-mode .back-btn:hover {
+            background-color: #000000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Back Button -->
+        <button onclick="window.location.href='index.html'" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </button>
+
+        <h1>Post a Ride</h1>
+        <form id="rideForm">
+            <input type="text" id="from" placeholder="From" required>
+            <input type="text" id="destination" placeholder="To" required>
+            <input type="date" id="date" required>
+            <input type="time" id="time" required>
+            <input type="number" id="seats" placeholder="Seats Available" required>
+            <input type="number" id="cost" placeholder="Estimated Cost per Person" required>
+            <input type="text" id="vehicle" placeholder="Vehicle (e.g., EECO, Innova, Bus, etc.)" required>
+            <input type="tel" id="phone" placeholder="Enter your Phone Number" pattern="[0-9]{10}" maxlength="10" required>
+            <button id="post_btn" type="submit">Post Ride</button>
+        </form>
+
+        <h2>Your Posted Rides</h2>
+        <div class="ride-list-container">
+            <ul id="rideList"></ul>
+            <p id="noRidesMessage" style="display: none;">No rides posted yet.</p>
+        </div>
+    </div>
+
+    <script>
+        // Check login status
+        const token = localStorage.getItem('token');
+        // if (!token) {
+        //     alert('Please Log in First');  // Alert first
+        //     window.location.href = 'login.html';  // Then redirect
+        // }
+
+        // Load dark mode preference
+        const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+        document.body.classList.toggle('dark-mode', savedDarkMode);
+
+
+        // Ride Form Logic
+        const rideForm = document.getElementById('rideForm');
+        const rideList = document.getElementById('rideList');
+        const noRidesMessage = document.getElementById('noRidesMessage');
+
+        // Fetch rides from backend
+// Fetch and display rides for the logged-in user
+async function displayRides() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'auth.html';
+            alert('Please Log in First');
+            return;
+        }
+
+        const response = await fetch('http://localhost:5000/api/rides/user', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const rides = await response.json();
+        rideList.innerHTML = '';
+
+        if (rides.length === 0) {
+            noRidesMessage.style.display = 'block';
+        } else {
+            noRidesMessage.style.display = 'none';
+            rides.forEach(ride => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <strong>From:</strong> ${ride.from}<br>
+                    <strong>To:</strong> ${ride.to}<br>
+                    <strong>Date:</strong> ${ride.date}<br>
+                    <strong>Time:</strong> ${ride.time}<br>
+                    <strong>Seats:</strong> ${ride.seats}<br>
+                    <strong>Cost:</strong> ₹${ride.cost}/person<br>
+                    <strong>Vehicle:</strong> ${ride.vehicle}<br>
+                    <button id=deleter onclick="deleteRide('${ride._id}')">Delete</button>
+                `;
+                rideList.appendChild(li);
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+
+        // Post Ride
+        rideForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login to post a ride');
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            const formData = {
+                from: document.getElementById('from').value,
+                to: document.getElementById('destination').value,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value,
+                seats: parseInt(document.getElementById('seats').value),
+                cost: parseInt(document.getElementById('cost').value),
+                vehicle: document.getElementById('vehicle').value,
+                phone: document.getElementById('phone').value
+            };
+
+            try {
+                // First update user's phone number
+                const updateResponse = await fetch('http://localhost:5000/api/user/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        phone: formData.phone
+                    })
+                });
+
+                if (!updateResponse.ok) {
+                    throw new Error('Failed to update phone number');
+                }
+
+                // Then create the ride
+                const response = await fetch('http://localhost:5000/api/rides', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to post ride');
+                }
+
+                alert('Ride posted successfully!');
+                window.location.href = 'post.html';
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message);
+            }
+        });
+
+        // Delete Ride
+        async function deleteRide(rideId) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/rides/${rideId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    displayRides();
+                } else {
+                    alert('Failed to delete ride');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        // Load rides from localStorage
+        let rides = JSON.parse(localStorage.getItem('rides')) || [];
+
+
+        /*
+        // Function to display rides from local storage
+        function displayRides() {
+            rideList.innerHTML = ''; // Clear the list
+
+            if (rides.length === 0) {
+                // Show "No rides posted yet" message
+                noRidesMessage.style.display = 'block';
+            } else {
+                // Hide the message and display rides
+                noRidesMessage.style.display = 'none';
+                rides.forEach((ride, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <strong>From:</strong> ${ride.from}<br>
+                        <strong>To:</strong> ${ride.destination}<br>
+                        <strong>Date:</strong> ${ride.date}<br>
+                        <strong>Time:</strong> ${ride.time}<br>
+                        <strong>Seats:</strong> ${ride.seats}<br>
+                        <strong>Cost:</strong> ₹${ride.cost}/person<br>
+                        <strong>Vehicle:</strong> ${ride.vehicle}<br>
+                        <button id="deleter" onclick="deleteRide(${index})">Delete</button>
+                    `;
+                    rideList.appendChild(li);
+                });
+            }
+        }*/
+
+        // Initial load
+        displayRides();
+    </script>
+</body>
+
+</html>

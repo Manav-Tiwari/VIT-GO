@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Authentication - VIT-GO</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            transition: background 0.3s ease;
+        }
+
+        .auth-container {
+            margin-top: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .error-message {
+            color: #ff4444;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        .container {
+            background-color: rgb(245, 245, 245);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 35vh;
+        }
+        .back-btn {
+            background-color: #01d5ff;
+            color: rgb(41, 41, 41);
+            border: none;
+            padding: 7px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 15px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .back-btn:hover {
+            background-color: white;
+        }
+        body.dark-mode .back-btn {
+            background-color: #2b2b2b;
+        }
+        body.dark-mode .back-btn:hover {
+            background-color: #000000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <button onclick="window.location.href='index.html'" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </button>
+        <h1>Sign Up / Sign In</h1>
+        
+        <div class="auth-container">
+            <div id="g_id_onload"
+                data-client_id="782014035282-4ntqsicomh0kp174fr6smem0un1cep31.apps.googleusercontent.com"
+                data-callback="handleCredentialResponse"
+                data-auto_prompt="false"
+                data-context="signin"
+                data-ux_mode="popup"
+                data-login_uri="http://localhost:5000/api/auth/google">
+            </div>
+            <div class="g_id_signin"
+                data-type="standard"
+                data-size="large"
+                data-theme="outline"
+                data-text="signin_with"
+                data-shape="rectangular"
+                data-logo_alignment="left">
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+    </div>
+
+    <script>
+        // Load dark mode preference
+        const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+        document.body.classList.toggle('dark-mode', savedDarkMode);
+
+        // Handle Google Sign In response
+        async function handleCredentialResponse(response) {
+            try {
+                console.log('Received Google credential:', response.credential ? 'Present' : 'Missing');
+                
+                const result = await fetch('http://localhost:5000/api/auth/google', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        credential: response.credential
+                    })
+                });
+
+                const data = await result.json();
+                console.log('Server response:', data);
+
+                if (!result.ok) {
+                    throw new Error(data.error || 'Authentication failed');
+                }
+
+                // Store the token
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userId', data.userId);
+
+                // Redirect to home page
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Detailed error:', error);
+                const errorMessage = document.getElementById('errorMessage');
+                errorMessage.textContent = `Authentication failed: ${error.message}`;
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        // Handle Google Sign In errors
+        window.onload = function() {
+            google.accounts.id.initialize({
+                client_id: '782014035282-4ntqsicomh0kp174fr6smem0un1cep31.apps.googleusercontent.com',
+                callback: handleCredentialResponse,
+                auto_select: false,
+                cancel_on_tap_outside: true
+            });
+        };
+    </script>
+</body>
+
+</html>

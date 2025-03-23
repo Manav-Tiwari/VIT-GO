@@ -1,0 +1,338 @@
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(120deg, #6cd5ff, #0144d3);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align content to the top */
+    min-height: 100vh; /* Ensure the body takes at least the full viewport height */
+    transition: background-color 0.3s, color 0.3s;
+}
+body.dark-mode {
+    background: linear-gradient(120deg, #9f0000, #200082);
+}
+
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s;
+    margin-top: 60px; /* Add space for the "Back to Home" button */
+    margin-bottom: 20px; /* Add space at the bottom */
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #333;
+    transition: color 0.3s;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode .container {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-mode h1 {
+    color: #ffffff;
+}
+
+body.dark-mode input,
+body.dark-mode button {
+    background-color: #333;
+    color: #ffffff;
+    border-color: #90aaf0;
+}
+
+body.dark-mode #rideList li {
+    background-color: #333;
+    border-color: #555;
+    color: #ffffff;
+}
+
+body.dark-mode .btn {
+    background-color: #005fc5;
+}
+body.dark-mode #post_btn {
+    background-color: #00458e;
+}
+body.dark-mode button:hover {
+    background-color: #06142c;
+}
+body.dark-mode #deleter {
+    background-color: rgb(187, 0, 0);
+}
+body.dark-mode #interest {
+    background-color: #00458e;
+}
+
+
+#deleter {
+    background-color: rgb(187, 0, 0);
+    margin-top: 10px;
+}
+
+#interest {
+    margin-top: 10px;
+}
+
+/* Dark Mode Toggle */
+.dark-mode-toggle {
+    position: fixed; /* Fixed position */
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    z-index: 1000; /* Ensure it appears above other content */
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    margin-right: 10px;
+    padding-top: 40px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.btn {
+    margin-left: 5px;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 20px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #007bff;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+/* Back Button */
+.back-btn {
+    position: fixed; /* Fixed position */
+    top: 20px;
+    left: 20px;
+    text-decoration: none;
+    color: #007bff;
+    font-size: 16px;
+    z-index: 1000; /* Ensure it appears above other content */
+    padding: 5px 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn i {
+    margin-right: 5px;
+}
+
+/* Form Styles */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input, button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Ride List Styles */
+#rideList {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 20px;
+    max-width: 370px;
+}
+
+#rideList li {
+    background: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    text-align: left;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+/* Popup Styles */
+.popup {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it appears above other content */
+}
+
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 300px;
+    position: relative;
+}
+
+#closePopup {
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+}
+
+/* Dark Mode Popup Styles */
+body.dark-mode .popup-content {
+    background-color: #141414;
+    color: #ffffff;
+}
+
+/* No Rides Message */
+#noRidesMessage {
+    text-align: center;
+    font-size: 18px;
+    color: #666;
+    margin-top: 20px;
+}
+
+/* Dark Mode Message */
+body.dark-mode #noRidesMessage {
+    color: #ccc;
+}
+
+/* Vehicle Type Input */
+#phone {
+    margin-bottom: 10px;
+}
+
+/* Ride List Container */
+.ride-list-container {
+    max-height: 60vh; /* Limit height to prevent overflow */
+    overflow-y: auto; /* Make the list scrollable */
+    margin-top: 20px;
+}
+body.dark-mode #post_btn:hover {
+    background-color: #011e3f;
+}
+/* Search Bar Styles */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    max-width: 160px;
+}
+#from {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+#to{
+    padding-bottom: 10px;
+
+}
+.ride-list-containerr button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.ride-list-container button:hover {
+    background-color: #0056b3;
+}
+
+/* Dark Mode Search Bar Styles */
+body.dark-mode .search-bar input {
+    background-color: #333;
+    color: #ffffff;
+    border-color: #555;
+}
+
+body.dark-mode .ride-list-container button {
+    background-color: #005fc5;
+}
+
+body.dark-mode .ride-list-container button:hover {
+    background-color: #00458e;
+}
+body.dark-mode a{
+    color: rgb(62, 154, 234);
+}
+body.dark-mode button{
+    background-color: rgb(2, 56, 184);
+}
+#contactDetails {
+    text-align: left;
+    margin-left: 10px;
+}
+
