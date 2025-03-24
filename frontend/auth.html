@@ -87,7 +87,10 @@
                 data-theme="outline"
                 data-text="signin_with"
                 data-shape="rectangular"
-                data-logo_alignment="left">
+                data-logo_alignment="left"
+                data-width="250"
+                data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                data-login_uri="https://vit-go.onrender.com/api/auth/google">
             </div>
         </div>
 
@@ -104,7 +107,7 @@
             try {
                 console.log('Received Google credential:', response.credential ? 'Present' : 'Missing');
                 
-                const result = await fetch('http://localhost:5000/api/auth/google', {
+                const result = await fetch('https://vit-go.onrender.com/api/auth/google', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

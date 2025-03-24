@@ -656,7 +656,7 @@
             const token = localStorage.getItem('token');
             if (token) {
                 // Fetch user data
-                fetch('http://localhost:5000/api/user/profile', {
+                fetch('https://vit-go.onrender.com/api/user/profile', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
