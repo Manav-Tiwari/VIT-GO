@@ -79,7 +79,7 @@
                 data-auto_prompt="false"
                 data-context="signin"
                 data-ux_mode="popup"
-                data-login_uri="http://localhost:5000/api/auth/google">
+                data-login_uri="https://vit-go.onrender.com/api/auth/google">
             </div>
             <div class="g_id_signin"
                 data-type="standard"
@@ -89,7 +89,7 @@
                 data-shape="rectangular"
                 data-logo_alignment="left"
                 data-width="250"
-                data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                data-client_id="782014035282-4ntqsicomh0kp174fr6smem0un1cep31.apps.googleusercontent.com"
                 data-login_uri="https://vit-go.onrender.com/api/auth/google">
             </div>
         </div>
@@ -110,19 +110,21 @@
                 const result = await fetch('https://vit-go.onrender.com/api/auth/google', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
                         credential: response.credential
                     })
                 });
 
+                if (!result.ok) {
+                    const errorData = await result.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${result.status}`);
+                }
+
                 const data = await result.json();
                 console.log('Server response:', data);
-
-                if (!result.ok) {
-                    throw new Error(data.error || 'Authentication failed');
-                }
 
                 // Store the token
                 localStorage.setItem('token', data.token);
@@ -133,7 +135,11 @@
             } catch (error) {
                 console.error('Detailed error:', error);
                 const errorMessage = document.getElementById('errorMessage');
-                errorMessage.textContent = `Authentication failed: ${error.message}`;
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage.textContent = 'Unable to connect to the server. Please check your internet connection and try again.';
+                } else {
+                    errorMessage.textContent = `Authentication failed: ${error.message}`;
+                }
                 errorMessage.style.display = 'block';
             }
         }
