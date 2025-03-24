@@ -113,11 +113,8 @@
                 const result = await fetch('https://vit-go.onrender.com/api/auth/google', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
+                        'Content-Type': 'application/json'
                     },
-                    mode: 'cors',
                     body: JSON.stringify({
                         credential: response.credential
                     })
