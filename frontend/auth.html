@@ -102,26 +102,48 @@
         const savedDarkMode = localStorage.getItem('darkMode') === 'true';
         document.body.classList.toggle('dark-mode', savedDarkMode);
 
+        // Retry mechanism
+        async function fetchWithRetry(url, options, maxRetries = 3) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    console.log(`Attempt ${i + 1} of ${maxRetries}`);
+                    const response = await fetch(url, options);
+                    console.log(`Response status: ${response.status}`);
+                    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+                    return response;
+                } catch (error) {
+                    console.error(`Attempt ${i + 1} failed:`, error);
+                    if (i === maxRetries - 1) throw error;
+                    // Wait before retrying (exponential backoff)
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+                }
+            }
+        }
+
         // Handle Google Sign In response
         async function handleCredentialResponse(response) {
             try {
                 console.log('Received Google credential:', response.credential ? 'Present' : 'Missing');
                 
-                // Log the request details
-                console.log('Sending request to:', 'https://vit-go.onrender.com/api/auth/google');
-                
-                const result = await fetch('https://vit-go.onrender.com/api/auth/google', {
+                const requestOptions = {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
+                    credentials: 'include',
                     body: JSON.stringify({
                         credential: response.credential
                     })
+                };
+
+                console.log('Sending request to:', 'https://vit-go.onrender.com/api/auth/google');
+                console.log('Request options:', {
+                    ...requestOptions,
+                    body: JSON.parse(requestOptions.body)
                 });
 
-                console.log('Response status:', result.status);
-                console.log('Response headers:', Object.fromEntries(result.headers.entries()));
+                const result = await fetchWithRetry('https://vit-go.onrender.com/api/auth/google', requestOptions);
 
                 if (!result.ok) {
                     const errorData = await result.json();
@@ -139,10 +161,17 @@
                 // Redirect to home page
                 window.location.href = 'index.html';
             } catch (error) {
-                console.error('Detailed error:', error);
+                console.error('Detailed error:', {
+                    message: error.message,
+                    name: error.name,
+                    stack: error.stack
+                });
+                
                 const errorMessage = document.getElementById('errorMessage');
                 if (error.message.includes('Failed to fetch')) {
                     errorMessage.textContent = 'Unable to connect to the server. Please check your internet connection and try again. If the problem persists, please try again in a few minutes.';
+                } else if (error.message.includes('Not allowed by CORS')) {
+                    errorMessage.textContent = 'Access denied. Please ensure you are using the correct domain to access the application.';
                 } else {
                     errorMessage.textContent = `Authentication failed: ${error.message}`;
                 }
