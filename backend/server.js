@@ -331,17 +331,6 @@ app.get('/api/user/:userId', authenticate, async (req, res) => {
     }
 });
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-// Add logging middleware
-app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-    next();
-});
-
 // Update the port configuration
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
