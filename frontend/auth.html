@@ -107,6 +107,9 @@
             try {
                 console.log('Received Google credential:', response.credential ? 'Present' : 'Missing');
                 
+                // Log the request details
+                console.log('Sending request to:', 'https://vit-go.onrender.com/api/auth/google');
+                
                 const result = await fetch('https://vit-go.onrender.com/api/auth/google', {
                     method: 'POST',
                     headers: {
@@ -118,8 +121,12 @@
                     })
                 });
 
+                console.log('Response status:', result.status);
+                console.log('Response headers:', Object.fromEntries(result.headers.entries()));
+
                 if (!result.ok) {
                     const errorData = await result.json();
+                    console.error('Error response:', errorData);
                     throw new Error(errorData.error || `HTTP error! status: ${result.status}`);
                 }
 
@@ -136,7 +143,7 @@
                 console.error('Detailed error:', error);
                 const errorMessage = document.getElementById('errorMessage');
                 if (error.message.includes('Failed to fetch')) {
-                    errorMessage.textContent = 'Unable to connect to the server. Please check your internet connection and try again.';
+                    errorMessage.textContent = 'Unable to connect to the server. Please check your internet connection and try again. If the problem persists, please try again in a few minutes.';
                 } else {
                     errorMessage.textContent = `Authentication failed: ${error.message}`;
                 }

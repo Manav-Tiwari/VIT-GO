@@ -19,7 +19,12 @@ const app = express();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'https://vit-go.onrender.com', 'http://vit-go.onrender.com'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true
+}));
 app.use(express.json());
 
 // MongoDB Connection
