@@ -87,10 +87,7 @@
                 data-theme="outline"
                 data-text="signin_with"
                 data-shape="rectangular"
-                data-logo_alignment="left"
-                data-width="250"
-                data-client_id="782014035282-4ntqsicomh0kp174fr6smem0un1cep31.apps.googleusercontent.com"
-                data-login_uri="https://vit-go.onrender.com/api/auth/google">
+                data-logo_alignment="left">
             </div>
         </div>
 
@@ -102,57 +99,27 @@
         const savedDarkMode = localStorage.getItem('darkMode') === 'true';
         document.body.classList.toggle('dark-mode', savedDarkMode);
 
-        // Retry mechanism
-        async function fetchWithRetry(url, options, maxRetries = 3) {
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    console.log(`Attempt ${i + 1} of ${maxRetries}`);
-                    const response = await fetch(url, options);
-                    console.log(`Response status: ${response.status}`);
-                    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-                    return response;
-                } catch (error) {
-                    console.error(`Attempt ${i + 1} failed:`, error);
-                    if (i === maxRetries - 1) throw error;
-                    // Wait before retrying (exponential backoff)
-                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
-                }
-            }
-        }
-
         // Handle Google Sign In response
         async function handleCredentialResponse(response) {
             try {
                 console.log('Received Google credential:', response.credential ? 'Present' : 'Missing');
                 
-                const requestOptions = {
+                const result = await fetch('https://vit-go.onrender.com/api/auth/google', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
-                    credentials: 'include',
                     body: JSON.stringify({
                         credential: response.credential
                     })
-                };
-
-                console.log('Sending request to:', 'https://vit-go.onrender.com/api/auth/google');
-                console.log('Request options:', {
-                    ...requestOptions,
-                    body: JSON.parse(requestOptions.body)
                 });
-
-                const result = await fetchWithRetry('https://vit-go.onrender.com/api/auth/google', requestOptions);
-
-                if (!result.ok) {
-                    const errorData = await result.json();
-                    console.error('Error response:', errorData);
-                    throw new Error(errorData.error || `HTTP error! status: ${result.status}`);
-                }
 
                 const data = await result.json();
                 console.log('Server response:', data);
+
+                if (!result.ok) {
+                    throw new Error(data.error || 'Authentication failed');
+                }
 
                 // Store the token
                 localStorage.setItem('token', data.token);
@@ -161,20 +128,9 @@
                 // Redirect to home page
                 window.location.href = 'index.html';
             } catch (error) {
-                console.error('Detailed error:', {
-                    message: error.message,
-                    name: error.name,
-                    stack: error.stack
-                });
-                
+                console.error('Detailed error:', error);
                 const errorMessage = document.getElementById('errorMessage');
-                if (error.message.includes('Failed to fetch')) {
-                    errorMessage.textContent = 'Unable to connect to the server. Please check your internet connection and try again. If the problem persists, please try again in a few minutes.';
-                } else if (error.message.includes('Not allowed by CORS')) {
-                    errorMessage.textContent = 'Access denied. Please ensure you are using the correct domain to access the application.';
-                } else {
-                    errorMessage.textContent = `Authentication failed: ${error.message}`;
-                }
+                errorMessage.textContent = `Authentication failed: ${error.message}`;
                 errorMessage.style.display = 'block';
             }
         }

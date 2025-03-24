@@ -19,49 +19,7 @@ const app = express();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Middleware
-app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-    console.log('Request headers:', req.headers);
-    console.log('Request origin:', req.headers.origin);
-    next();
-});
-
-app.use(cors({
-    origin: function(origin, callback) {
-        const allowedOrigins = ['https://vitravel.vercel.app', 'http://localhost:5500'];
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            console.log('Blocked origin:', origin);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-    credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204
-}));
-
-// Add preflight handling
-app.options('*', cors());
-
-// Add error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Error:', {
-        message: err.message,
-        stack: err.stack,
-        name: err.name,
-        path: req.path,
-        method: req.method,
-        origin: req.headers.origin
-    });
-    res.status(500).json({
-        error: 'Internal Server Error',
-        details: err.message
-    });
-});
-
+app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection
