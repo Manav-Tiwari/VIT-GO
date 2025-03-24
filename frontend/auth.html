@@ -114,8 +114,10 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
                     },
+                    mode: 'cors',
                     body: JSON.stringify({
                         credential: response.credential
                     })
@@ -132,6 +134,10 @@
 
                 const data = await result.json();
                 console.log('Server response:', data);
+
+                if (!data.token) {
+                    throw new Error('No token received from server');
+                }
 
                 // Store the token
                 localStorage.setItem('token', data.token);

@@ -20,11 +20,21 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'https://vit-go.onrender.com', 'http://vit-go.onrender.com'],
+    origin: '*', // Allow all origins during development
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true
 }));
+
+// Add error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    res.status(500).json({
+        error: 'Internal Server Error',
+        details: err.message
+    });
+});
+
 app.use(express.json());
 
 // MongoDB Connection
@@ -319,6 +329,17 @@ app.get('/api/user/:userId', authenticate, async (req, res) => {
         console.error('Error fetching user:', error);
         res.status(500).json({ error: 'Failed to fetch user details' });
     }
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Add logging middleware
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
 });
 
 // Update the port configuration
