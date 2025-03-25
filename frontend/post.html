@@ -99,7 +99,7 @@ async function displayRides() {
             return;
         }
 
-        const response = await fetch('https://vit-go.onrender.com/api/rides/user', {
+        const response = await fetch('https://vitravel.onrender.com/api/rides/user', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -157,7 +157,7 @@ async function displayRides() {
 
             try {
                 // First update user's phone number
-                const updateResponse = await fetch('https://vit-go.onrender.com/api/user/profile', {
+                const updateResponse = await fetch('https://vitravel.onrender.com/api/user/profile', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -173,7 +173,7 @@ async function displayRides() {
                 }
 
                 // Then create the ride
-                const response = await fetch('https://vit-go.onrender.com/api/rides', {
+                const response = await fetch('https://vitravel.onrender.com/api/rides', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -198,7 +198,7 @@ async function displayRides() {
         // Delete Ride
         async function deleteRide(rideId) {
             try {
-                const response = await fetch(`https://vit-go.onrender.com/api/rides/${rideId}`, {
+                const response = await fetch(`https://vitravel.onrender.com/api/rides/${rideId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`

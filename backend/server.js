@@ -22,6 +22,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const corsOptions = {
     origin: [
         'https://vitravel.vercel.app',
+        'https://vitravel.onrender.com',
         'http://127.0.0.1:3002',
         'http://localhost:3002',
         'http://localhost:5000'
