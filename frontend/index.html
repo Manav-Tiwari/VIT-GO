@@ -494,6 +494,25 @@
                 gap: 3px;
             }
         }
+
+        .logo {
+            width: 370px;
+            height: auto;
+            margin-bottom: 20px;
+            transition: opacity 0.3s ease;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .logo.dark-mode {
+            display: none;
+        }
+        body.dark-mode .logo {
+            display: none;
+        }
+        body.dark-mode .logo.dark-mode {
+            display: block;
+        }
     </style>
 </head>
 
@@ -518,10 +537,14 @@
 
     <!-- Header Section -->
     <div class="header">
-        <h1><b>WELCOME TO <br><span class="highlight">VI-T</span>ravel!</b></h1>
-        <p>Find or offer a ride with just a few clicks!</p>
+        <h1>
+            <span style="display: block; margin-bottom: 10px;"><b>WELCOME TO</b></span>
+            <img src="logo.png" alt="VI-Travel" class="logo">
+            <img src="logo-dark.png" alt="VI-Travel" class="logo dark-mode">
+        </h1>
+        <p>Find or offer a ride with just a few clicks in VIT Bhopal!</p>
         <a href="auth.html" class="btn btn-custom">Get Started</a>
-            </div>
+    </div>
 
     <!-- Dark Mode Toggle and Profile Button -->
     <div class="toggle-container" id="darkModeToggle">

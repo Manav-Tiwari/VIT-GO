@@ -85,6 +85,19 @@
             background-color: #310200;
             color: white;
         }
+
+        .top-logo {
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            display: block;
+            margin: 20px auto;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .top-logo {
+            filter: brightness(0) invert(1);
+        }
     </style>
 </head>
 
@@ -99,10 +112,11 @@
 </script>
 
 <body>
+    <img src="V.png" alt="VIT Logo" class="top-logo">
     <div class="container">
         <!-- Back Button -->
         <button onclick="window.location.href='index.html'" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Home
+            <i class="fas fa-arrow-left"></i> Back
         </button>
 
         <h1>Search Rides</h1>

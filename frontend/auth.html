@@ -63,6 +63,18 @@
         body.dark-mode .back-btn:hover {
             background-color: #000000;
         }
+        .top-logo {
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            display: block;
+            margin: 20px auto;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .top-logo {
+            filter: brightness(0) invert(1);
+        }
     </style>
 </head>
 
@@ -77,9 +89,10 @@
 </script>
 
 <body>
+    <img src="V.png" alt="VIT Logo" class="top-logo">
     <div class="container">
         <button onclick="window.location.href='index.html'" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Home
+            <i class="fas fa-arrow-left"></i> Back
         </button>
         <h1>Sign Up / Sign In</h1>
         
@@ -100,6 +113,7 @@
                 data-shape="rectangular"
                 data-logo_alignment="left">
             </div>
+            <p style="margin-top: 15px; color: #666; font-size: 14px;">Please Sign In with your official VIT Bhopal Mail ID</p>
         </div>
 
         <div class="error-message" id="errorMessage"></div>
