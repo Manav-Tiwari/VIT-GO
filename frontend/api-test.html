@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h2>API Test Results:</h2>
+    <div id="result"></div>
+    <button onclick="testAPI()">Test API</button>
+    <button onclick="testServerStatus()">Test Server Status</button>
+
+    <script>
+        // Test the auth endpoint
+        async function testAPI() {
+            try {
+                const response = await fetch('https://vit-go.onrender.com/api/auth/google', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Origin': 'http://127.0.0.1:3002'
+                    },
+                    mode: 'cors',
+                    body: JSON.stringify({
+                        credential: 'test_credential'
+                    })
+                });
+                
+                const status = response.status;
+                const text = await response.text();
+                
+                document.getElementById('result').innerHTML = 
+                    `Status: ${status}<br>Response: ${text}`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    `Error: ${error.message}<br>
+                     This could mean:<br>
+                     1. The server is down<br>
+                     2. CORS is not configured<br>
+                     3. Network connectivity issues`;
+            }
+        }
+
+        // Test if server is responding at all
+        async function testServerStatus() {
+            try {
+                const startTime = Date.now();
+                const response = await fetch('https://vit-go.onrender.com', {
+                    method: 'GET',
+                    mode: 'no-cors' // This bypasses CORS for a basic connectivity test
+                });
+                const endTime = Date.now();
+                
+                document.getElementById('result').innerHTML = 
+                    `Server is reachable!<br>
+                     Response type: ${response.type}<br>
+                     Time taken: ${endTime - startTime}ms`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    `Server is not reachable: ${error.message}<br>
+                     This likely means the server is down or the URL is incorrect.`;
+            }
+        }
+    </script>
+</body>
+</html>

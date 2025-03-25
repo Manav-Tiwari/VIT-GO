@@ -18,23 +18,8 @@ const app = express();
 // Initialize Google OAuth client
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-// CORS Configuration
-const corsOptions = {
-    origin: true, // Allow all origins temporarily for debugging
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-    exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
-    credentials: true,
-    optionsSuccessStatus: 200,
-    preflightContinue: false
-};
-
 // Middleware
-app.use(cors(corsOptions));
-
-// Add OPTIONS handling for preflight requests
-app.options('*', cors(corsOptions));
-
+app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection

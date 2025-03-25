@@ -27,19 +27,9 @@
         }
         .error-message {
             color: #ff4444;
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: rgba(255, 68, 68, 0.1);
-            border: 1px solid #ff4444;
-            max-width: 80%;
-            margin-left: auto;
-            margin-right: auto;
+            margin-top: 10px;
+            text-align: center;
             display: none;
-        }
-        body.dark-mode .error-message {
-            background-color: rgba(255, 68, 68, 0.2);
-            color: #ff6666;
         }
         .container {
             background-color: rgb(245, 245, 245);
@@ -112,76 +102,47 @@
         // Handle Google Sign In response
         async function handleCredentialResponse(response) {
             try {
-                console.log('Starting authentication process...');
                 console.log('Received Google credential:', response.credential ? 'Present' : 'Missing');
                 
                 const result = await fetch('https://vit-go.onrender.com/api/auth/google', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
-                    mode: 'cors',
-                    credentials: 'same-origin',
                     body: JSON.stringify({
                         credential: response.credential
                     })
                 });
 
-                console.log('Server response status:', result.status);
+                const data = await result.json();
+                console.log('Server response:', data);
 
                 if (!result.ok) {
-                    const errorText = await result.text();
-                    console.error('Server error response:', errorText);
-                    try {
-                        const errorJson = JSON.parse(errorText);
-                        throw new Error(errorJson.error || errorJson.details || 'Authentication failed');
-                    } catch (e) {
-                        throw new Error(`Server error: ${result.status} - ${errorText}`);
-                    }
+                    throw new Error(data.error || 'Authentication failed');
                 }
 
-                const data = await result.json();
-                console.log('Authentication response data:', data);
+                // Store the token
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userId', data.userId);
 
-                if (data.token) {
-                    localStorage.setItem('token', data.token);
-                    if (data.user) {
-                        localStorage.setItem('userName', data.user.name);
-                        localStorage.setItem('userEmail', data.user.email);
-                    }
-                    window.location.href = 'index.html';
-                } else {
-                    throw new Error('No token received from server');
-                }
+                // Redirect to home page
+                window.location.href = 'index.html';
             } catch (error) {
-                console.error('Authentication error:', error);
-                console.error('Error stack:', error.stack);
+                console.error('Detailed error:', error);
                 const errorMessage = document.getElementById('errorMessage');
                 errorMessage.textContent = `Authentication failed: ${error.message}`;
                 errorMessage.style.display = 'block';
             }
         }
 
-        // Initialize Google Sign In with error handling
+        // Handle Google Sign In errors
         window.onload = function() {
-            try {
-                google.accounts.id.initialize({
-                    client_id: '782014035282-4ntqsicomh0kp174fr6smem0un1cep31.apps.googleusercontent.com',
-                    callback: handleCredentialResponse,
-                    auto_select: false,
-                    cancel_on_tap_outside: true
-                });
-                google.accounts.id.renderButton(
-                    document.querySelector('.g_id_signin'),
-                    { theme: 'outline', size: 'large' }
-                );
-            } catch (error) {
-                console.error('Google Sign-In initialization error:', error);
-                const errorMessage = document.getElementById('errorMessage');
-                errorMessage.textContent = 'Failed to initialize Google Sign-In. Please refresh the page.';
-                errorMessage.style.display = 'block';
-            }
+            google.accounts.id.initialize({
+                client_id: '782014035282-4ntqsicomh0kp174fr6smem0un1cep31.apps.googleusercontent.com',
+                callback: handleCredentialResponse,
+                auto_select: false,
+                cancel_on_tap_outside: true
+            });
         };
     </script>
 </body>
