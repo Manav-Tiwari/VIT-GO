@@ -18,8 +18,25 @@ const app = express();
 // Initialize Google OAuth client
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-// Middleware
-app.use(cors());
+// CORS Configuration
+const corsOptions = {
+    origin: [
+        'https://vitravel.vercel.app',
+        'http://127.0.0.1:3002',
+        'http://localhost:3002',
+        'http://localhost:5000'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
+// Apply CORS middleware before other middleware
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable pre-flight for all routes
+
+// Other middleware
 app.use(express.json());
 
 // MongoDB Connection
