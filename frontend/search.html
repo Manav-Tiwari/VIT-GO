@@ -175,17 +175,25 @@
                     }
                 });
 
+                const data = await response.json();
+                rideList.innerHTML = '';
+
+                // Handle 404 response (no rides found)
+                if (response.status === 404) {
+                    noRidesMessage.style.display = 'block';
+                    noRidesMessage.textContent = 'No rides are currently available';
+                    return;
+                }
+
+                // Handle other error responses
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const rides = await response.json();
-                rideList.innerHTML = '';
-
                 // Apply filters if provided
-                let displayRides = rides;
+                let displayRides = data;
                 if (filteredRides) {
-                    displayRides = rides.filter(ride => {
+                    displayRides = data.filter(ride => {
                         const rideFrom = ride.from.toLowerCase();
                         const rideTo = ride.to.toLowerCase();
                         return rideFrom.includes(filteredRides.from) && rideTo.includes(filteredRides.to);
@@ -194,7 +202,7 @@
 
                 if (displayRides.length === 0) {
                     noRidesMessage.style.display = 'block';
-                    noRidesMessage.textContent = 'No rides available for your search criteria.';
+                    noRidesMessage.textContent = 'No rides available for your search criteria';
                 } else {
                     noRidesMessage.style.display = 'none';
                     displayRides.forEach(ride => {
