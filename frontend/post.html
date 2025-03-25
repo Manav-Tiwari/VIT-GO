@@ -75,8 +75,14 @@
         <form id="rideForm">
             <input type="text" id="from" placeholder="From" required>
             <input type="text" id="destination" placeholder="To" required>
-            <input type="date" id="date" required>
-            <input type="time" id="time" required>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <label for="date" style="margin: 0;">Date:</label>
+                <input type="date" id="date" required>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <label for="time" style="margin: 0;">Time:</label>
+                <input type="time" id="time" required>
+            </div>
             <input type="number" id="seats" placeholder="Seats Available" required>
             <input type="number" id="cost" placeholder="Estimated Cost per Person" required>
             <input type="text" id="vehicle" placeholder="Vehicle (e.g., EECO, Innova, Bus, etc.)" required>
