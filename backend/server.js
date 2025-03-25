@@ -237,7 +237,7 @@ app.post('/api/auth/google', async (req, res) => {
       
       // Create new user
       user = new User({
-        name: payload.name,
+        name: payload.name.split(' ').slice(0, -1).join(' '),
         email: payload.email
       });
       await user.save();
