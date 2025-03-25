@@ -41,6 +41,15 @@
         body.dark-mode .back-btn:hover {
             background-color: #000000;
         }
+        .top-logo {
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            display: block;
+            margin: 20px auto;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 
@@ -55,6 +64,7 @@
 </script>
 
 <body>
+    <img src="V.png" alt="VIT Logo" class="top-logo">
     <div class="container">
         <!-- Back Button -->
         <button onclick="window.location.href='index.html'" class="back-btn">
