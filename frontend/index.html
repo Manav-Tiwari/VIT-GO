@@ -15,6 +15,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;700&display=swap"
         rel="stylesheet">
 
+    <link rel="manifest" href="/manifest.json">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@500;700&display=swap"
+        rel="stylesheet">
+
+
     <style>
         /* Ensure html and body take up full height */
         html {
@@ -40,10 +46,12 @@
         }
 
         .container {
-            flex: 1; /* Allows container to take remaining space */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Keeps content towards the top */
+            flex: 1;
+            /* Allows container to take remaining space */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            /* Keeps content towards the top */
             min-width: auto;
             padding-bottom: 10px;
             margin-bottom: 25px;
@@ -638,7 +646,8 @@
             </div>
             <div class="footer-feedback">
                 <span>Any</span>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSeq4eqMTPuOz6Id81SwPLDFDX1liIdLr-E_tUhnx2msV0XTEg/viewform?usp=dialog" target="_blank">Issues or Feedback</a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSeq4eqMTPuOz6Id81SwPLDFDX1liIdLr-E_tUhnx2msV0XTEg/viewform?usp=dialog"
+                    target="_blank">Issues or Feedback</a>
                 <span>?</span>
             </div>
         </div>
@@ -647,6 +656,27 @@
 
     <!-- JavaScript -->
     <script>
+        //PWA
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (event) => {
+            event.preventDefault(); // Prevent default behavior
+            deferredPrompt = event; // Store event for later
+            localStorage.setItem('installPromptAvailable', 'true'); // Store flag
+            console.log('📢 beforeinstallprompt event fired');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('appInstalled') === 'true' || window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('✅ App is already installed. Hiding banner.');
+                return; // Exit early, don't show the banner
+            }
+
+            if (localStorage.getItem('installPromptAvailable') === 'true') {
+                showInstallBanner(); // Show banner only if install prompt is available
+            }
+        });
+
         // Dark Mode Logic
         const darkModeToggle = document.getElementById('darkModeToggle');
         const highlightElement = document.querySelector('.highlight');
@@ -768,6 +798,104 @@
         profileDropdown.addEventListener('click', (e) => {
             e.stopPropagation();
         });
+
+        // Function to display the custom install banner
+        function showInstallBanner() {
+            if (localStorage.getItem('appInstalled') === 'true' || window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('🚀 App is already installed. Skipping banner.');
+                return;
+            }
+
+            const installBanner = document.createElement('div');
+            installBanner.id = 'installBanner';
+            installBanner.style = `
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: gold;
+        color: black;
+        text-align: center;
+        padding: 10px;
+        font-size: 12px;
+        font-family: 'Orbitron', sans-serif;
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    `;
+
+            const bannerText = document.createElement('span');
+            bannerText.innerText = 'Make a Shortcut for Quick Access!';
+            bannerText.style = 'margin-right: 10px;';
+
+            const installButton = document.createElement('button');
+            installButton.innerText = 'Install';
+            installButton.style = `
+        background: white;
+        color: #252525;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-right: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    `;
+
+            installButton.addEventListener('click', () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the install prompt');
+                            localStorage.setItem('appInstalled', 'true'); // Store install status
+                        } else {
+                            console.log('User dismissed the install prompt');
+                        }
+                        deferredPrompt = null;
+                    });
+                }
+                document.body.removeChild(installBanner);
+            });
+
+            const closeButton = document.createElement('button');
+            closeButton.innerText = '✖';
+            closeButton.style = `
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        background: none;
+        color: black;
+        border: none;
+        font-size: 15px;
+        cursor: pointer;
+        font-weight: bold;
+    `;
+
+            closeButton.addEventListener('click', () => {
+                document.body.removeChild(installBanner);
+            });
+
+            installBanner.appendChild(bannerText);
+            installBanner.appendChild(installButton);
+            installBanner.appendChild(closeButton);
+
+            document.body.appendChild(installBanner);
+        }
+
+        // Listen for the `appinstalled` event to hide the banner when the app is installed
+        window.addEventListener('appinstalled', () => {
+            console.log('✅ App has been installed.');
+            localStorage.setItem('appInstalled', 'true'); // Store flag in localStorage
+
+            const banner = document.getElementById('installBanner');
+            if (banner) {
+                banner.remove();
+                console.log('✅ Install banner removed.');
+            }
+        });
+
     </script>
 
 </body>

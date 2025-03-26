@@ -1,0 +1,20 @@
+{
+    "name": "VITRAVEL",
+    "short_name": "VITRAVEL",
+    "start_url": "/frontend/index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#0078d7",
+    "icons": [
+        {
+            "src": "V.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "V.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
