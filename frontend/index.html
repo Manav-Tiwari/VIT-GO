@@ -667,13 +667,26 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('appInstalled') === 'true' || window.matchMedia('(display-mode: standalone)').matches) {
-                console.log('✅ App is already installed. Hiding banner.');
-                return; // Exit early, don't show the banner
-            }
+            // Check if the app is installed
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 
-            if (localStorage.getItem('installPromptAvailable') === 'true') {
-                showInstallBanner(); // Show banner only if install prompt is available
+            if (isStandalone) {
+                console.log('✅ App is installed. Hiding install banner.');
+                localStorage.setItem('appInstalled', 'true');
+            } else {
+                console.log('🚀 App is NOT installed. Checking install prompt availability...');
+
+                // If previously installed but now uninstalled, reset flags
+                if (localStorage.getItem('appInstalled') === 'true') {
+                    console.warn('⚠️ App was uninstalled. Resetting install state.');
+                    localStorage.removeItem('appInstalled');
+                    localStorage.removeItem('installPromptAvailable');
+                }
+
+                // Check if install prompt is available
+                if (localStorage.getItem('installPromptAvailable') === 'true') {
+                    showInstallBanner();
+                }
             }
         });
 
