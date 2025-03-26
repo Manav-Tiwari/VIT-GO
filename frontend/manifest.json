@@ -2,7 +2,7 @@
     "id": "/index.html",
     "name": "VITRAVEL",
     "short_name": "VITRAVEL",
-    "start_url": "/frontend/index.html",
+    "start_url": "/index.html",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#0078d7",
