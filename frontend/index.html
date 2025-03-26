@@ -656,39 +656,39 @@
 
     <!-- JavaScript -->
     <script>
-        //PWA
-        let deferredPrompt;
+        // //PWA
+        // let deferredPrompt;
 
-        window.addEventListener('beforeinstallprompt', (event) => {
-            event.preventDefault(); // Prevent default behavior
-            deferredPrompt = event; // Store event for later
-            localStorage.setItem('installPromptAvailable', 'true'); // Store flag
-            console.log('📢 beforeinstallprompt event fired');
-        });
+        // window.addEventListener('beforeinstallprompt', (event) => {
+        //     event.preventDefault(); // Prevent default behavior
+        //     deferredPrompt = event; // Store event for later
+        //     localStorage.setItem('installPromptAvailable', 'true'); // Store flag
+        //     console.log('📢 beforeinstallprompt event fired');
+        // });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check if the app is installed
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     // Check if the app is installed
+        //     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 
-            if (isStandalone) {
-                console.log('✅ App is installed. Hiding install banner.');
-                localStorage.setItem('appInstalled', 'true');
-            } else {
-                console.log('🚀 App is NOT installed. Checking install prompt availability...');
+        //     if (isStandalone) {
+        //         console.log('✅ App is installed. Hiding install banner.');
+        //         localStorage.setItem('appInstalled', 'true');
+        //     } else {
+        //         console.log('🚀 App is NOT installed. Checking install prompt availability...');
 
-                // If previously installed but now uninstalled, reset flags
-                if (localStorage.getItem('appInstalled') === 'true') {
-                    console.warn('⚠️ App was uninstalled. Resetting install state.');
-                    localStorage.removeItem('appInstalled');
-                    localStorage.removeItem('installPromptAvailable');
-                }
+        //         // If previously installed but now uninstalled, reset flags
+        //         if (localStorage.getItem('appInstalled') === 'true') {
+        //             console.warn('⚠️ App was uninstalled. Resetting install state.');
+        //             localStorage.removeItem('appInstalled');
+        //             localStorage.removeItem('installPromptAvailable');
+        //         }
 
-                // Check if install prompt is available
-                if (localStorage.getItem('installPromptAvailable') === 'true') {
-                    showInstallBanner();
-                }
-            }
-        });
+        //         // Check if install prompt is available
+        //         if (localStorage.getItem('installPromptAvailable') === 'true') {
+        //             showInstallBanner();
+        //         }
+        //     }
+        // });
 
         // Dark Mode Logic
         const darkModeToggle = document.getElementById('darkModeToggle');
