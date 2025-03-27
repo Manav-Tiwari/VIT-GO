@@ -1,66 +1,76 @@
-const { request } = require('node:https'); // Use native HTTPS request for CommonJS
+require("dotenv").config(); // Load .env if running locally
+const https = require("https");
 
-const RENDER_API_KEY = process.env.RENDER_API_KEY || process.env.GITHUB_ENV.RENDER_API_KEY;
-const HEALTH_CHECK_URL = process.env.HEALTH_CHECK_URL;
+// Load environment variables
+const RENDER_SERVICE_ID = process.env.RENDER_SERVICE_ID;
+const RENDER_API_KEY = process.env.RENDER_API_KEY;
+
+if (!RENDER_SERVICE_ID || !RENDER_API_KEY) {
+    console.error("❌ Missing environment variables! Make sure RENDER_SERVICE_ID and RENDER_API_KEY are set.");
+    process.exit(1);
+}
 
 const RENDER_RESTART_URL = `https://api.render.com/v1/services/${RENDER_SERVICE_ID}/restart`;
+const HEALTH_CHECK_URL = "https://your-backend-url.com/health"; // Change to your actual health check endpoint
 
-// Function to check if the backend is running
-const isServerUp = async () => {
-    return new Promise((resolve) => {
-        const req = request(HEALTH_CHECK_URL, { method: 'GET', timeout: 5000 }, (res) => {
-            resolve(res.statusCode >= 200 && res.statusCode < 300);
-        });
-
-        req.on('error', () => resolve(false));
-        req.end();
+// Function to check server health
+function checkServerHealth() {
+    return new Promise((resolve, reject) => {
+        https.get(HEALTH_CHECK_URL, (res) => {
+            if (res.statusCode === 200) {
+                resolve("✅ Server is healthy!");
+            } else {
+                reject(new Error(`⚠️ Server returned status: ${res.statusCode}`));
+            }
+        }).on("error", (err) => reject(new Error(`❌ Health check failed: ${err.message}`)));
     });
-};
+}
 
 // Function to restart the Render service
-const restartService = async () => {
+function restartService() {
     return new Promise((resolve, reject) => {
-        const req = request(RENDER_RESTART_URL, {
-            method: 'POST',
+        const options = {
+            method: "POST",
             headers: {
-                'Authorization': `Bearer ${RENDER_API_KEY}`, // Ensure correct format
-                'Content-Type': 'application/json'
+                "Accept": "application/json",
+                "Authorization": `Bearer ${RENDER_API_KEY}`
             }
-        }, (res) => {
-            let data = '';
-            res.on('data', (chunk) => { data += chunk; });
-            res.on('end', () => {
-                console.log(`🔍 Render API Response: ${res.statusCode} - ${data}`);
-                if (res.statusCode >= 200 && res.statusCode < 300) {
-                    console.log('✅ Successfully requested Render service restart.');
-                    resolve();
+        };
+
+        const req = https.request(RENDER_RESTART_URL, options, (res) => {
+            let data = "";
+            res.on("data", (chunk) => { data += chunk; });
+            res.on("end", () => {
+                if (res.statusCode === 200) {
+                    resolve("🔄 Successfully restarted Render service!");
                 } else {
-                    reject(new Error(`Render API Error: ${res.statusCode} - ${data}`));
+                    reject(new Error(`❌ Render API Error: ${res.statusCode} - ${data}`));
                 }
             });
         });
 
-        req.on('error', (error) => {
-            console.error('❌ Error restarting the service:', error);
-            reject(error);
-        });
-
+        req.on("error", (err) => reject(new Error(`❌ Restart request failed: ${err.message}`)));
         req.end();
     });
-};
+}
 
-// Function to continuously monitor the server
-const monitorServer = async () => {
-    while (true) {
-        if (await isServerUp()) {
-            console.log('✅ Server is running fine.');
-        } else {
-            console.warn('⚠️ Server is down! Restarting...');
-            await restartService();
+// Function to monitor the server and restart if needed
+async function monitorServer() {
+    try {
+        const healthStatus = await checkServerHealth();
+        console.log(healthStatus);
+    } catch (error) {
+        console.error(error.message);
+        console.log("⚠️ Server is down! Restarting...");
+        try {
+            const restartStatus = await restartService();
+            console.log(restartStatus);
+        } catch (restartError) {
+            console.error(restartError.message);
+            process.exit(1);
         }
-        await new Promise(resolve => setTimeout(resolve, 300000)); // Wait 5 minutes
     }
-};
+}
 
-// Start monitoring
+// Run the health check
 monitorServer();
