@@ -1,8 +1,6 @@
-require('dotenv').config(); // Load environment variables
 const { request } = require('node:https'); // Use native HTTPS request for CommonJS
 
-const RENDER_SERVICE_ID = process.env.RENDER_SERVICE_ID;
-const RENDER_API_KEY = process.env.RENDER_API_KEY;
+const RENDER_API_KEY = process.env.RENDER_API_KEY || process.env.GITHUB_ENV.RENDER_API_KEY;
 const HEALTH_CHECK_URL = process.env.HEALTH_CHECK_URL;
 
 const RENDER_RESTART_URL = `https://api.render.com/v1/services/${RENDER_SERVICE_ID}/restart`;
