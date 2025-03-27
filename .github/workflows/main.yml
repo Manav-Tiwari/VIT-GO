@@ -19,6 +19,7 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
+        working-directory: backend  # 👈 Add this if `healthCheck.js` is in `backend/`
 
       - name: Run Health Check Script
         run: node healthCheck.js
