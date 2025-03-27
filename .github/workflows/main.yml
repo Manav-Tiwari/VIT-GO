@@ -22,4 +22,4 @@ jobs:
         working-directory: backend  # 👈 Add this if `healthCheck.js` is in `backend/`
 
       - name: Run Health Check Script
-        run: node healthCheck.js
+        run: node backend/healthCheck.js
